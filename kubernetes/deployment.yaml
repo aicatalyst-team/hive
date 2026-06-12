@@ -18,6 +18,8 @@ spec:
         app: hive
         app.kubernetes.io/name: hive
     spec:
+      imagePullSecrets:
+        - name: quay-pull-secret
       containers:
         - name: hive
           image: quay.io/aicatalyst/hive:latest
