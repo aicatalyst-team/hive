@@ -1,0 +1,49 @@
+# Version control
+.git
+.github
+.gitattributes
+
+# Documentation
+docs/
+*.md
+!README.md
+LICENSE
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+SECURITY.md
+
+# Tests and benchmarks
+tests/
+results/
+examples/
+patches/
+
+# Build artifacts
+*.egg-info
+__pycache__
+*.pyc
+*.pyo
+.mypy_cache
+.ruff_cache
+.pytest_cache
+
+# Docker files (not needed inside container)
+docker/
+deploy/
+
+# C++ module (not needed for Python API server)
+hive-cpp/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# AutoPoC artifacts
+.autopoc/
+poc-plan.md
+poc-report.md
+poc_test.py
+poc-state.yaml
+kubernetes/

@@ -1,0 +1,51 @@
+# Dockerfile.ubi — Hive on UBI 9 / OpenShift (x86_64)
+#
+# Build:
+#   podman build -f Dockerfile.ubi -t quay.io/aicatalyst/hive:latest .
+#
+# Run:
+#   podman run --rm -p 8080:8080 quay.io/aicatalyst/hive:latest
+
+FROM registry.access.redhat.com/ubi9/python-312
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /opt/app-root/src
+
+# Copy dependency metadata first for layer caching
+COPY pyproject.toml README.md ./
+
+# Install core dependencies + FastAPI/Uvicorn for the API server
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir \
+        "joblib>=1.3" \
+        "pydantic>=2.0" \
+        "cryptography>=41.0" \
+        "PyJWT>=2.8" \
+        "numpy>=1.24" \
+        "scikit-learn>=1.3" \
+        "fastapi>=0.100" \
+        "uvicorn[standard]>=0.20"
+
+# Copy application source
+COPY hive ./hive
+COPY scripts ./scripts
+
+# Install the hive package itself (no-deps since we already installed deps above)
+RUN pip install --no-cache-dir --no-deps .
+
+# Smoke test: verify imports work
+RUN python -c "from hive import HiveStack; from hive.rule_fast import RuleFastHoneyComb; print('hive imports ok')"
+
+# Fix permissions for OpenShift (arbitrary UID support)
+USER 0
+RUN chgrp -R 0 /opt/app-root && chmod -R g=u /opt/app-root
+
+USER 1001
+
+EXPOSE 8080
+
+# Run the FastAPI server on 0.0.0.0:8080
+CMD ["python", "scripts/hive_api_server.py", "--host", "0.0.0.0", "--port", "8080"]
