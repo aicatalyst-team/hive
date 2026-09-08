@@ -1,4 +1,10 @@
-# Hive
+> [!WARNING]
+> **This repository is archived.**
+>
+> Archived on 2026-09-08 by the AI Catalyst Platform Team.
+> It is read-only and no longer maintained.
+
+---# Hive
 
 **Orchestration layer for AI agents** - CPU-side routing, context compression, and causal memory to reduce token usage by 64%.
 
